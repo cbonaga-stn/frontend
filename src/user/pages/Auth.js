@@ -4,6 +4,7 @@ import Card from "../../shared/components/UIElements/Card";
 import Input from "../../shared/components/FormElements/Input";
 import Button from "../../shared/components/FormElements/Button";
 import ErrorModal from "../../shared/components/UIElements/ErrorModal";
+import ImageUpload from "../../shared/components/FormElements/ImageUpload";   // Import ImageUpload component
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import {
   VALIDATOR_EMAIL,
@@ -35,38 +36,25 @@ const Auth = () => {
   );
 
   const switchModeHandler = () => {
-    if (!isLoginMode) {
+    if (isLoginMode) {
+      // switching FROM login TO signup -> add name and image inputs
       setFormData(
         {
           ...formState.inputs,
-          name: undefined,
-          image: { value: null, isValid: false }, // Remove image input in login mode
-        },
-        formState.inputs.email.isValid && formState.inputs.password.isValid
-      );
-    } else {
-      setFormData(
-        {
-          ...formState.inputs,
-          name: {
-            value: "",
-            isValid: false,
-          },
+          name: { value: "", isValid: false },
+          image: { value: null, isValid: false },
         },
         false
       );
+    } else {
+      // switching FROM signup TO login -> remove name and image inputs
+      const { name, image, ...restInputs } = formState.inputs;
+      setFormData(restInputs, restInputs.email.isValid && restInputs.password.isValid);
     }
     setIsLoginMode((prevMode) => !prevMode);
   };
 
   const authSubmitHandler = async (event) => {
-
-    const formData = new FormData(); // Create FormData object for multipart/form-data
-    formData.append('name', formState.inputs.name.value);  // Append name, email, password, and image to FormData
-    formData.append('email', formState.inputs.email.value);
-    formData.append('password', formState.inputs.password.value);
-    formData.append('image', formState.inputs.image.value);
-    
     event.preventDefault();
 
     if (isLoginMode) {
@@ -86,17 +74,17 @@ const Auth = () => {
       } catch (err) {}
     } else {
       try {
-        const responseData = await sendRequest( 
+        // Use FormData for signup so the image file is uploaded correctly
+        const formData = new FormData();
+        formData.append("name", formState.inputs.name.value);
+        formData.append("email", formState.inputs.email.value);
+        formData.append("password", formState.inputs.password.value);
+        formData.append("image", formState.inputs.image.value);
+
+        const responseData = await sendRequest(
           "http://localhost:5005/api/users/signup",
           "POST",
-          JSON.stringify({
-            name: formState.inputs.name.value,
-            email: formState.inputs.email.value,
-            password: formState.inputs.password.value,
-          }),
-          {
-            "Content-Type": "application/json",
-          }
+          formData
         );
         auth.login(responseData.user.id);
       } catch (err) {}

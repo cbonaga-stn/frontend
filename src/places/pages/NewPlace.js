@@ -43,7 +43,6 @@ const NewPlace = () => {
   const navigate = useNavigate();
 
   const placeSubmitHandler = async (event) => {
-    
     event.preventDefault();
 
     const formData = new FormData();   // Create FormData object for multipart/form-data
@@ -57,13 +56,7 @@ const NewPlace = () => {
       await sendRequest(
         "http://localhost:5005/api/places",
         "POST",
-        JSON.stringify({
-          title: formState.inputs.title.value,
-          description: formState.inputs.description.value,
-          address: formState.inputs.address.value,
-          creator: auth.userId,
-        }),
-        { "Content-Type": "application/json" }
+        formData
       );
       navigate("/");
     } catch (err) {}
