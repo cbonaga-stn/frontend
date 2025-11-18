@@ -75,18 +75,18 @@ const Auth = () => {
     } else {
       try {
         // Use FormData for signup so the image file is uploaded correctly
-        const formData = new FormData();
-        formData.append("name", formState.inputs.name.value);
+        const formData = new FormData();   
+        formData.append("name", formState.inputs.name.value);   // Append name, email, password, and image
         formData.append("email", formState.inputs.email.value);
         formData.append("password", formState.inputs.password.value);
         formData.append("image", formState.inputs.image.value);
 
-        const responseData = await sendRequest(
+        const responseData = await sendRequest(   // Send signup request
           "http://localhost:5005/api/users/signup",
           "POST",
           formData
         );
-        auth.login(responseData.user.id);
+        auth.login(responseData.user.id);   // Log in the user after successful signup
       } catch (err) {}
     }
   };
