@@ -141,7 +141,7 @@ const Auth = () => {
             onInput={inputHandler}
           />
           {!isLoginMode && (   // Image upload only in signup mode
-            <ImageUpload center id="image" onInput={inputHandler} />  // Image upload component
+          <ImageUpload center id="image" onInput={inputHandler} />  // Image upload component
           )}
           <Button type="submit" disabled={!formState.isValid}>
             {isLoginMode ? "LOGIN" : "SIGNUP"}
